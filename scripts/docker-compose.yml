@@ -1,12 +1,12 @@
 services:
-  template-svc:
-    container_name: template-svc
+  queue-mgr:
+    container_name: queue-mgr
     build:
       context: ../
       dockerfile: Dockerfile
     ports:
-      - '5900:5900'
+      - '5000:5010'
     restart: always
     env_file:
       - ../.env.production
-    command: [ 'uvicorn', 'app:app', '--host', '0.0.0.0', '--port', '5900', '--workers', '4' ]
+    command: [ 'uvicorn', 'app:app', '--host', '0.0.0.0', '--port', '5000', '--workers', '4' ]

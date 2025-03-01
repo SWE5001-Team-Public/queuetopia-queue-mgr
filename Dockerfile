@@ -5,7 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Add a label to identify the project
-LABEL project="queuetopia-template-svc"
+LABEL project="queuetopia-queue-mgr"
 
 # Copy requirements file and install dependencies
 COPY requirements.txt .
@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the application port
-EXPOSE 5900
+EXPOSE 5010
 
 # Command to run the application
 CMD ["python", "app.py"]

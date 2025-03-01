@@ -1,29 +1,29 @@
 services:
-  template-svc:
-    container_name: template-svc
+  queue-mgr:
+    container_name: queue-mgr
     build:
       context: ../
       dockerfile: Dockerfile
     ports:
-      - "5900:5900"
+      - "5010:5000"
     restart: always
     depends_on:
-      - template-svc-postgres
+      - queue-mgr-postgres
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:password@template-svc-postgres:5432/template_svc_db
+      DATABASE_URL: postgresql+asyncpg://postgres:password@queue-mgr-postgres:5432/queue_mgr_db
       ENVIRONMENT: local
-    command: [ 'uvicorn', 'app:app', '--host', '0.0.0.0', '--port', '5900' ]
+    command: [ 'uvicorn', 'app:app', '--host', '0.0.0.0', '--port', '5000' ]
 
-  template-svc-postgres:
-    container_name: template-svc-db
+  queue-mgr-postgres:
+    container_name: queue-mgr-db
     image: postgres:15
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: template_svc_db
+      POSTGRES_DB: queue_mgr_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

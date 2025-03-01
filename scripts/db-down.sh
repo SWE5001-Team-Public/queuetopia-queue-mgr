@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-DB_CONTAINER="template-svc-db"
-DB_IMAGE="queuetopia-template-svc-db"
+DB_CONTAINER="queue-mgr-db"
+DB_IMAGE="queuetopia-queue-mgr-db"
 
 # Default compose file
 COMPOSE_FILE="scripts/docker-compose-db.yml"
@@ -28,7 +28,7 @@ else
 fi
 
 echo "Cleaning up unused Docker resources..."
-docker image prune -af --filter "label=project=queuetopia-template-svc"
-docker volume rm queuetopia_template_postgres_data
+docker image prune -af --filter "label=project=queuetopia-queue-mgr"
+docker volume rm queuetopia_queue_mgr_postgres_data
 
 echo "✅ PostgreSQL container and image removed!"

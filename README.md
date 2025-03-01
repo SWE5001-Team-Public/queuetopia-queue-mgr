@@ -1,4 +1,4 @@
-# Queuetopia Template Service
+# Queuetopia Queue Manager
 
 This project can be run **using Docker** or **directly as a FastAPI application**.
 
@@ -57,7 +57,7 @@ If you want to run the app using the **development Docker Compose file**, use:
 
 1. Moves to the **project root directory** where the `Dockerfile` is located.
 2. Calls `down.sh` to stop any existing containers.
-3. Builds a Docker image named `template-svc`.
+3. Builds a Docker image named `queue-mgr`.
 4. Starts the container using `docker-compose.yml` (or `docker-compose-dev.yml` when `--dev` is passed).
 5. Runs the container **in detached mode (`-d`)**.
 6. Lists all running containers.
@@ -103,7 +103,7 @@ pip install -r requirements.txt
 Start the app by running:
 
 ```sh
-uvicorn app:app --host 0.0.0.0 --port 5900 --reload
+uvicorn app:app --host 0.0.0.0 --port 5010 --reload
 ```
 
 The FastAPI app should now be running at:
@@ -147,8 +147,8 @@ sudo chmod +x /usr/local/bin/docker-compose
 ### **3️⃣ Clone the Repository**
 
 ```sh
-git clone https://github.com/SWE5001-Team-Public/template-svc.git
-cd template-svc
+git clone https://github.com/SWE5001-Team-Public/queuetopia-queue-mgr.git
+cd queuetopia-queue-mgr
 ```
 
 ### **4️⃣ Download the `.env.production` File**
@@ -205,13 +205,13 @@ To stop and clean up the container and its image, run:
 
 ## **🔹 Useful Docker Commands**
 
-| Command                    | Description                        |
-|----------------------------|------------------------------------|
-| `docker ps`                | Show running containers            |
-| `docker images`            | List all images                    |
-| `docker logs template-svc` | View logs of the running container |
-| `docker-compose up -d`     | Start containers in detached mode  |
-| `docker-compose down`      | Stop and remove containers         |
+| Command                 | Description                        |
+|-------------------------|------------------------------------|
+| `docker ps`             | Show running containers            |
+| `docker images`         | List all images                    |
+| `docker logs queue-mgr` | View logs of the running container |
+| `docker-compose up -d`  | Start containers in detached mode  |
+| `docker-compose down`   | Stop and remove containers         |
 
 ---
 
@@ -226,7 +226,7 @@ To stop and clean up the container and its image, run:
 | `./scripts/db-down.sh`                                | Stop and remove PostgreSQL           |
 | `uvicorn app:app --host 0.0.0.0 --port 5900 --reload` | Start the FastAPI app without Docker |
 | `docker ps`                                           | Check running containers             |
-| `docker logs template-svc`                            | View container logs                  |
+| `docker logs queue-mgr`                               | View container logs                  |
 
 Now you can **run the application using Docker, locally for development, or deploy it to AWS EC2**! 🚀
 

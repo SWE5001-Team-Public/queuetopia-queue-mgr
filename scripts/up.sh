@@ -18,10 +18,10 @@ else
 fi
 
 echo "Building the Docker image..."
-docker build -t template-svc .
+docker build -t queue-mgr .
 
 echo "Starting the Docker container with $COMPOSE_FILE..."
-docker-compose -f "$COMPOSE_FILE" -p queuetopia_template up -d --build
+docker-compose -f "$COMPOSE_FILE" -p queuetopia_queue_mgr up -d --build
 
 echo "Checking running containers..."
 docker ps
