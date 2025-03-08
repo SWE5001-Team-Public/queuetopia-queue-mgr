@@ -28,3 +28,8 @@ class EditStore(BaseModel):
 class EditStoreStatus(BaseModel):
   id: str
   deactivated: bool
+
+
+class CreateQueue(BaseModel):
+  queue_type: str
+  store_id: str
