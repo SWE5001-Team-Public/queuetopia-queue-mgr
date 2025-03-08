@@ -2,15 +2,15 @@ import asyncio
 from contextlib import asynccontextmanager
 
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from aws.sqs import poll_sqs
+from config import load_environment
 from db.database import init_db, insert_static
 from routes import config
 
-load_dotenv()
+load_environment()
 
 
 @asynccontextmanager
