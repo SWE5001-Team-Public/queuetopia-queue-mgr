@@ -1,15 +1,13 @@
 import asyncio
-import uvicorn
-
-from dotenv import load_dotenv
 from contextlib import asynccontextmanager
+
+import uvicorn
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from aws.sqs import poll_sqs
-from db.database import init_db
-
-# from routes import queue
+from db.database import init_db, insert_static
 
 load_dotenv()
 
@@ -20,6 +18,7 @@ async def lifespan(app: FastAPI):
 
   # Initialize the database at startup
   await init_db()
+  await insert_static()
 
   # Start polling SQS for new messages
   task_poll_sqs = asyncio.create_task(poll_sqs())

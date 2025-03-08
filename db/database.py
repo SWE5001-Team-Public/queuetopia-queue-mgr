@@ -1,8 +1,13 @@
-import ssl
 import os
+import ssl
+
 from dotenv import load_dotenv
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
+
+from db.base import Base
+from db.models import StaticTable
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "prod")
 print(f"🚀 Running in {ENVIRONMENT.upper()} environment")
@@ -37,9 +42,6 @@ SessionLocal = sessionmaker(
   expire_on_commit=False
 )
 
-# Base model class
-Base = declarative_base()
-
 
 # Function to create tables asynchronously
 async def create_tables():
@@ -50,6 +52,22 @@ async def create_tables():
 # Run table creation when the application starts
 async def init_db():
   await create_tables()
+
+
+# Insert static values
+async def insert_static():
+  async with SessionLocal(bind=engine) as session:
+    try:
+      await session.execute(delete(StaticTable))
+      records = [
+        StaticTable(key='Virtual', value='Virtual', type='Queue'),
+        StaticTable(key='Physical', value='Physical', type='Queue'),
+      ]
+      session.add_all(records)
+      await session.commit()
+    except Exception as e:
+      await session.rollback()
+      print(f"Error inserting records: {e}")
 
 
 # Dependency for async DB session
