@@ -6,7 +6,7 @@ def to_camel(string: str) -> str:
   return camelize(string)
 
 
-class QueueTypeResponse(BaseModel):
+class ConfigResponse(BaseModel):
   key: str
   value: str
 
