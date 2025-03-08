@@ -1,13 +1,13 @@
-import json
-
 import asyncio
-import boto3
+import json
 import os
+
+import boto3
 from dotenv import load_dotenv
 
+from db.database import get_db
 from repository.store import create_store, edit_store, edit_store_status
 from schemas import CreateStore, EditStore, EditStoreStatus
-from db.database import get_db
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "prod")
 
@@ -41,7 +41,7 @@ async def poll_sqs():
     response = sqs_client.receive_message(
       QueueUrl=AWS_SQS_QUEUE_URL,
       MaxNumberOfMessages=1,
-      WaitTimeSeconds=10,
+      WaitTimeSeconds=1,
       AttributeNames=["All"]
     )
 

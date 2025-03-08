@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from aws.sqs import poll_sqs
 from db.database import init_db, insert_static
+from routes import config
 
 load_dotenv()
 
@@ -20,11 +21,17 @@ async def lifespan(app: FastAPI):
   await init_db()
   await insert_static()
 
-  # Start polling SQS for new messages
+  # Start polling SQS for new messages asynchronously
   task_poll_sqs = asyncio.create_task(poll_sqs())
 
   yield
+
+  # Clean up the background SQS polling when shutting down
   task_poll_sqs.cancel()
+  try:
+    await task_poll_sqs
+  except asyncio.CancelledError:
+    pass
 
 
 app = FastAPI(lifespan=lifespan)
@@ -46,6 +53,7 @@ async def health_check():
 
 
 # Other routes
+app.include_router(config.router, prefix="/config", tags=["Static Configurations"])
 
 if __name__ == "__main__":
   uvicorn.run("app:app", host="0.0.0.0", port=5000)
