@@ -1,9 +1,15 @@
 from sqlalchemy import Column, String, Integer, Boolean
-import uuid
-
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from db.database import Base
+from db.base import Base
+
+
+class StaticTable(Base):
+  __tablename__ = 'static'
+
+  key = Column(String(50), primary_key=True, index=True, nullable=False)
+  value = Column(String(100), nullable=False)
+  type = Column(String(100), nullable=False)
 
 
 class StoreTable(Base):
