@@ -20,6 +20,6 @@ def setup_logging():
 
   logging.basicConfig(
     level=numeric_level,
-    format=r'%(asctime)s | %(levelname)s: %(message)s',
+    format=r'%(asctime)s|%(levelname)s: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
   )
