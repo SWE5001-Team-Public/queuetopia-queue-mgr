@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import schemas
 from db.database import get_db
 from repository import queue as crud
 from schemas import CreateQueue
@@ -14,8 +15,7 @@ async def create_queue(queue: CreateQueue, db: AsyncSession = Depends(get_db)):
   """Create a new queue for store"""
   existing_queue = await crud.get_queue_by_store_id_and_queue_type(db, queue)
   if existing_queue:
-    raise HTTPException(status_code=400,
-                        detail=f"{queue.queue_type} queue already exists for store {queue.store_id}")
+    raise HTTPException(status_code=400, detail=f"{queue.queue_type} queue already exists for store {queue.store_id}")
 
   new_queue = await crud.create_queue(db, queue)
   return JSONResponse(
@@ -26,3 +26,14 @@ async def create_queue(queue: CreateQueue, db: AsyncSession = Depends(get_db)):
       "queueType": new_queue.queue_type
     }
   )
+
+
+@router.get("/get/{store_id}", response_model=list[schemas.QueueResponse])
+async def get_queue(store_id: str, db: AsyncSession = Depends(get_db)):
+  """Get a list of queues by store id"""
+  queue = await crud.get_queues_by_store_id(db, store_id)
+
+  if not queue:
+    raise HTTPException(status_code=404, detail="Queue not found")
+
+  return queue

@@ -33,3 +33,16 @@ class EditStoreStatus(BaseModel):
 class CreateQueue(BaseModel):
   queue_type: str
   store_id: str
+
+
+class QueueResponse(BaseModel):
+  id: str
+  q_id: int
+  queue_type: str
+  store_id: str
+  display_id: str
+
+  class Config:
+    alias_generator = to_camel
+    populate_by_name = True
+    from_attributes = True

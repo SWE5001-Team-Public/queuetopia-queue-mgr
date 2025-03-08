@@ -22,3 +22,10 @@ async def get_queue_by_store_id_and_queue_type(db: AsyncSession, queue: CreateQu
   result = await db.execute(
     select(QueueTable).filter(QueueTable.queue_type == queue.queue_type, QueueTable.store_id == queue.store_id))
   return result.scalar_one_or_none()
+
+
+async def get_queues_by_store_id(db: AsyncSession, store_id: str):
+  """Retrieve a queue by store id."""
+  result = await db.execute(
+    select(QueueTable).filter(QueueTable.store_id == store_id))
+  return result.scalars().all()

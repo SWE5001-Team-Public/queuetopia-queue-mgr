@@ -39,4 +39,4 @@ class QueueTable(Base):
 
   @hybrid_property
   def display_id(self):
-    return f"S{self.q_id}"
+    return f"Q{self.q_id}"
