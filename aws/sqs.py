@@ -1,22 +1,21 @@
-import json
-
 import asyncio
-import boto3
+import json
+import logging
 import os
-from dotenv import load_dotenv
 
+import boto3
+
+from config import load_environment, setup_logging
+from db.database import get_db
 from repository.store import create_store, edit_store, edit_store_status
 from schemas import CreateStore, EditStore, EditStoreStatus
-from db.database import get_db
+
+load_environment()
+setup_logging()
+
+logger = logging.getLogger(__name__)
 
 ENVIRONMENT = os.getenv("ENVIRONMENT", "prod")
-
-if ENVIRONMENT == "prod":
-  load_dotenv(".env.production")
-elif ENVIRONMENT == "local":
-  load_dotenv(".env.local")
-else:
-  load_dotenv(".env")
 
 # AWS SQS Configuration
 AWS_REGION = os.getenv("AWS_REGION")
@@ -36,12 +35,12 @@ sqs_client = boto3.client(
 async def poll_sqs():
   """Continuously poll SQS for new messages"""
   while True:
-    print(f"🔎 Polling queue for new messages")
+    logger.info(f"🔎 Polling SQS for new messages")
 
     response = sqs_client.receive_message(
       QueueUrl=AWS_SQS_QUEUE_URL,
       MaxNumberOfMessages=1,
-      WaitTimeSeconds=10,
+      WaitTimeSeconds=1,
       AttributeNames=["All"]
     )
 
@@ -56,36 +55,36 @@ async def poll_sqs():
 
         if result is True:
           sqs_client.delete_message(QueueUrl=AWS_SQS_QUEUE_URL, ReceiptHandle=receipt_handle)
-          print("✅ Message processed and deleted")
+          logger.info("✅ Message processed and deleted")
         else:
-          print(f"⚠️ Processing failed")
+          logger.warning(f"⚠️ Processing failed")
           sqs_client.change_message_visibility(
             QueueUrl=AWS_SQS_QUEUE_URL,
             ReceiptHandle=receipt_handle,
             VisibilityTimeout=0
           )
-          print("🔄 Message visibility timeout reset")
+          logger.info("🔄 Message visibility timeout reset")
 
       except Exception as e:
-        print(f"⚠️ Processing failed with exception: {str(e)}")
+        logger.error(f"⚠️ Processing failed with exception: {str(e)}")
         sqs_client.change_message_visibility(
           QueueUrl=AWS_SQS_QUEUE_URL,
           ReceiptHandle=receipt_handle,
           VisibilityTimeout=0
         )
-        print("🔄 Message visibility timeout reset")
+        logger.info("🔄 Message visibility timeout reset")
 
     await asyncio.sleep(1)
 
 
 async def process_message(body, message_group_id):
   """Process message body and save to database"""
-  print(f"⌛ Processing {message_group_id} event message: {body}")
+  logger.info(f"⌛ Processing {message_group_id} event message: {body}")
 
   if message_group_id == 'store-create-event':
     try:
       converted_obj = json.loads(body)
-      print(f"{converted_obj}")
+      logger.info(f"{converted_obj}")
       new_store = CreateStore(
         id=converted_obj["id"],
         s_id=converted_obj["s_id"],
@@ -96,16 +95,15 @@ async def process_message(body, message_group_id):
 
       async for db in get_db():
         await create_store(db, new_store)
-        print("✅ Store created successfully")
+        logger.info("✅ Store created successfully")
         return True
     except Exception as e:
-      print(f"⚠️ Store creation failed with exception: {str(e)}")
+      logger.error(f"⚠️ Store creation failed with exception: {str(e)}")
       return False
 
   if message_group_id == 'store-update-event':
     try:
       converted_obj = json.loads(body)
-      print(f"{converted_obj}")
       modified_store = EditStore(
         id=converted_obj["id"],
         name=converted_obj["name"],
@@ -114,16 +112,16 @@ async def process_message(body, message_group_id):
 
       async for db in get_db():
         await edit_store(db, modified_store)
-        print("✅ Store updated successfully")
+        logger.info("✅ Store updated successfully")
         return True
     except Exception as e:
-      print(f"⚠️ Store update failed with exception: {str(e)}")
+      logger.error(f"⚠️ Store update failed with exception: {str(e)}")
       return False
 
   if message_group_id == 'store-deactivate-event':
     try:
       converted_obj = json.loads(body)
-      print(f"{converted_obj}")
+      logger.info(f"{converted_obj}")
       modified_store = EditStoreStatus(
         id=converted_obj["id"],
         deactivated=True,
@@ -131,10 +129,10 @@ async def process_message(body, message_group_id):
 
       async for db in get_db():
         await edit_store_status(db, modified_store)
-        print("✅ Store deactivated successfully")
+        logger.info("✅ Store deactivated successfully")
         return True
     except Exception as e:
-      print(f"⚠️ Store deactivation failed with exception: {str(e)}")
+      logger.error(f"⚠️ Store deactivation failed with exception: {str(e)}")
       return False
 
   return False

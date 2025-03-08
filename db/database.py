@@ -1,25 +1,24 @@
+import logging
 import os
 import ssl
 
-from dotenv import load_dotenv
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
+from config import load_environment, setup_logging
 from db.base import Base
 from db.models import StaticTable
 
+load_environment()
+setup_logging()
+
+logger = logging.getLogger(__name__)
+
 ENVIRONMENT = os.getenv("ENVIRONMENT", "prod")
-print(f"🚀 Running in {ENVIRONMENT.upper()} environment")
-
-if ENVIRONMENT == "prod":
-  load_dotenv(".env.production")
-elif ENVIRONMENT == "local":
-  load_dotenv(".env.local")
-else:
-  load_dotenv(".env")  # Fallback to a default `.env` file
-
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+logger.info(f"🚀 Running in {ENVIRONMENT.upper()} environment")
 
 # Ensure DATABASE_URL is set
 if not DATABASE_URL:
@@ -67,7 +66,7 @@ async def insert_static():
       await session.commit()
     except Exception as e:
       await session.rollback()
-      print(f"Error inserting records: {e}")
+      logger.error(f"Error inserting records: {e}")
 
 
 # Dependency for async DB session

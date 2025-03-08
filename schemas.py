@@ -1,9 +1,14 @@
-from pydantic import BaseModel
 from humps import camelize
+from pydantic import BaseModel
 
 
 def to_camel(string: str) -> str:
   return camelize(string)
+
+
+class QueueTypeResponse(BaseModel):
+  key: str
+  value: str
 
 
 class CreateStore(BaseModel):
