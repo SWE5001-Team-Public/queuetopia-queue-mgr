@@ -57,8 +57,10 @@ async def insert_static():
   async with SessionLocal(bind=engine) as session:
     try:
       records = [
-        StaticTable(key='Virtual', value='Virtual', type='Queue'),
-        StaticTable(key='Physical', value='Physical', type='Queue'),
+        StaticTable(key='Open', value='Open', type='Queue_Status'),
+        StaticTable(key='Closed', value='Closed', type='Queue_Status'),
+        StaticTable(key='Virtual', value='Virtual', type='Queue_Type'),
+        StaticTable(key='Physical', value='Physical', type='Queue_Type'),
       ]
       session.add_all(records)
       await session.commit()
