@@ -2,7 +2,6 @@ import logging
 import os
 import ssl
 
-from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
@@ -57,7 +56,6 @@ async def init_db():
 async def insert_static():
   async with SessionLocal(bind=engine) as session:
     try:
-      await session.execute(delete(StaticTable))
       records = [
         StaticTable(key='Virtual', value='Virtual', type='Queue'),
         StaticTable(key='Physical', value='Physical', type='Queue'),

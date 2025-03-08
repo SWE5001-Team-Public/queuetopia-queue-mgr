@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from aws.sqs import poll_sqs
 from config import load_environment
 from db.database import init_db, insert_static
-from routes import config
+from routes import config, queue
 
 load_environment()
 
@@ -54,6 +54,7 @@ async def health_check():
 
 # Other routes
 app.include_router(config.router, prefix="/config", tags=["Static Configurations"])
+app.include_router(queue.router, prefix="/queue", tags=["Queue"])
 
 if __name__ == "__main__":
   uvicorn.run("app:app", host="0.0.0.0", port=5000)
