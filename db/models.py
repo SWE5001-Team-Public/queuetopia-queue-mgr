@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, String, Integer, Boolean, Sequence, ForeignKey
+from sqlalchemy import Column, String, Integer, Boolean, Sequence, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from db.base import Base
@@ -31,6 +31,9 @@ class StoreTable(Base):
 
 class QueueTable(Base):
   __tablename__ = "queues"
+  __table_args__ = (
+    UniqueConstraint("queue_type", "store_id", name="uq_queue_type_store_id"),
+  )
 
   id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
   q_id = Column(Integer, Sequence('queue_q_id_seq'), index=True, autoincrement=True, nullable=False)
