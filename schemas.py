@@ -62,6 +62,7 @@ class QueueResponse(BaseModel):
   status: str
   capacity: int
   waiting_time: int
+  deactivated: bool
   store_id: str
   display_id: str
 

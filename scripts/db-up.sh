@@ -5,13 +5,25 @@ set -e
 COMPOSE_FILE="scripts/docker-compose-db.yml"
 
 echo "Starting the PostgreSQL container..."
-docker-compose -f "$COMPOSE_FILE" -p queuetopia_queue_mgr up -d queue-mgr-postgres
+if command -v docker-compose &> /dev/null; then
+    docker-compose -f "$COMPOSE_FILE" -p queuetopia_queue_mgr up -d queue-mgr-postgres
+else
+    docker compose -f "$COMPOSE_FILE" -p queuetopia_queue_mgr up -d queue-mgr-postgres
+fi
+
+# Identify the correct PostgreSQL container name dynamically
+DB_CONTAINER=$(docker ps --format '{{.Names}}' | grep 'queue-mgr-db' || true)
+
+if [[ -z "$DB_CONTAINER" ]]; then
+    echo "❌ Error: PostgreSQL container not found!"
+    exit 1
+fi
 
 # Wait for PostgreSQL to be ready
-echo "Waiting for PostgreSQL to start..."
-until docker exec queue-mgr-db pg_isready -U postgres > /dev/null 2>&1; do
+echo "Waiting for PostgreSQL ($DB_CONTAINER) to start..."
+until docker exec "$DB_CONTAINER" pg_isready -U postgres > /dev/null 2>&1; do
     sleep 2
-    echo "PostgreSQL is still starting..."
+    echo "PostgreSQL ($DB_CONTAINER) is still starting..."
 done
 
-echo "✅ PostgreSQL is up and running!"
+echo "✅ PostgreSQL ($DB_CONTAINER) is up and running!"

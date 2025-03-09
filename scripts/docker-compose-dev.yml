@@ -5,14 +5,14 @@ services:
       context: ../
       dockerfile: Dockerfile
     ports:
-      - "5010:5000"
+      - '5010:5010'
     restart: always
     depends_on:
       - queue-mgr-postgres
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:password@queue-mgr-postgres:5432/queue_mgr_db
       ENVIRONMENT: local
-    command: [ 'uvicorn', 'app:app', '--host', '0.0.0.0', '--port', '5000' ]
+    command: [ 'uvicorn', 'app:app', '--host', '0.0.0.0', '--port', '5010' ]
 
   queue-mgr-postgres:
     container_name: queue-mgr-db
