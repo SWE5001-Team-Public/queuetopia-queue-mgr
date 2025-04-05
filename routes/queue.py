@@ -50,6 +50,17 @@ async def get_queue_details(queue_id: str, db: AsyncSession = Depends(get_db)):
   return queue
 
 
+@router.get("/details/q_id/{q_id}", response_model=schemas.QueueResponse)
+async def get_queue_details(q_id: int, db: AsyncSession = Depends(get_db)):
+  """Get a queue details by id"""
+  queue = await crud.get_queue_by_q_id(db, q_id)
+
+  if not queue:
+    raise HTTPException(status_code=404, detail="Queue details not found")
+
+  return queue
+
+
 @router.post("/edit/details")
 async def edit_queue_details(queue: schemas.ModifyQueue, db: AsyncSession = Depends(get_db)):
   updated_queue = await crud.edit_queue_details(db, queue)

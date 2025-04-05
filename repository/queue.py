@@ -34,7 +34,13 @@ async def get_queues_by_store_id(db: AsyncSession, store_id: str):
 
 async def get_queue_by_id(db: AsyncSession, queue_id: str):
   """Retrieve a queue by id."""
-  result = await db.execute(select(QueueTable).filter(QueueTable.id == queue_id))
+  result = await db.execute(select(QueueTable).filter(QueueTable.id == queue_id, QueueTable.deactivated == False))
+  return result.scalar_one_or_none()
+
+
+async def get_queue_by_q_id(db: AsyncSession, q_id: int):
+  """Retrieve a queue by q_id."""
+  result = await db.execute(select(QueueTable).filter(QueueTable.q_id == q_id, QueueTable.deactivated == False))
   return result.scalar_one_or_none()
 
 
