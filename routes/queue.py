@@ -33,9 +33,6 @@ async def get_queue(store_id: str, db: AsyncSession = Depends(get_db)):
   """Get a list of queues by store id"""
   queue = await crud.get_queues_by_store_id(db, store_id)
 
-  if not queue:
-    raise HTTPException(status_code=404, detail="Store queues not found")
-
   return queue
 
 
