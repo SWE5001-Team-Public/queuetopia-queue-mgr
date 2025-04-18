@@ -41,7 +41,6 @@ class QueueTable(Base):
   description = Column(String, nullable=True)
   status = Column(String(50), ForeignKey("static.key", onupdate="CASCADE"), nullable=False, default="Closed")
   capacity = Column(Integer, nullable=False, default=0)
-  waiting_time = Column(Integer, nullable=False, default=5)
   deactivated = Column(Boolean, default=True, nullable=False)
   store_id = Column(String, ForeignKey("stores.id", ondelete="CASCADE"), nullable=False)
 

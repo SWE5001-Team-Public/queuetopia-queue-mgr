@@ -55,7 +55,6 @@ async def edit_queue_details(db: AsyncSession, queue: ModifyQueue):
   db_queue.queue_type = queue.queue_type
   db_queue.description = queue.description
   db_queue.capacity = queue.capacity
-  db_queue.waiting_time = queue.waiting_time
 
   await db.commit()
   await db.refresh(db_queue)
