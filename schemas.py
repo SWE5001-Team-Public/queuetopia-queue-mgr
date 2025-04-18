@@ -41,7 +41,6 @@ class ModifyQueue(BaseModel):
   queue_type: str
   description: str | None
   capacity: int
-  waiting_time: int
 
 
 class ModifyQueueStatus(BaseModel):
@@ -61,7 +60,6 @@ class QueueResponse(BaseModel):
   description: str | None
   status: str
   capacity: int
-  waiting_time: int
   deactivated: bool
   store_id: str
   display_id: str
