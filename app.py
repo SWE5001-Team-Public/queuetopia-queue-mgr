@@ -1,4 +1,5 @@
 import asyncio
+import os
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -7,10 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from aws.sqs import poll_sqs
 from config import load_environment
-from db.database import init_db, insert_static
+from db.database import init_db, insert_static, insert_test_data
 from routes import config, queue
 
 load_environment()
+
+ENVIRONMENT = os.getenv("ENVIRONMENT", "prod")
 
 
 @asynccontextmanager
@@ -20,6 +23,9 @@ async def lifespan(app: FastAPI):
   # Initialize the database at startup
   await init_db()
   await insert_static()
+
+  if ENVIRONMENT == "local":
+    await insert_test_data()
 
   # Start polling SQS for new messages asynchronously
   task_poll_sqs = asyncio.create_task(poll_sqs())

@@ -36,7 +36,7 @@ class QueueTable(Base):
   )
 
   id = Column(String, primary_key=True, index=True, default=lambda: str(uuid.uuid4()))
-  q_id = Column(Integer, Sequence('queue_q_id_seq'), index=True, autoincrement=True, nullable=False)
+  q_id = Column(Integer, Sequence('queue_q_id_seq'), unique=True, index=True, autoincrement=True, nullable=False)
   queue_type = Column(String(50), ForeignKey("static.key", onupdate="CASCADE"), nullable=False)
   description = Column(String, nullable=True)
   status = Column(String(50), ForeignKey("static.key", onupdate="CASCADE"), nullable=False, default="Closed")
