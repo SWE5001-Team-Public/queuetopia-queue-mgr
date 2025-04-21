@@ -3,7 +3,7 @@ import os
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 from aws.sqs import poll_sqs
@@ -50,17 +50,21 @@ app.add_middleware(
   allow_headers=["*"],
 )
 
+router = APIRouter(prefix="/queue-mgr")
+
 
 # Health check endpoint
-@app.get("/health", tags=["System"])
+@router.get("/health", tags=["System"])
 async def health_check():
   """Health check endpoint for monitoring service status."""
   return {"status": "healthy"}
 
 
 # Other routes
-app.include_router(config.router, prefix="/config", tags=["Static Configurations"])
-app.include_router(queue.router, prefix="/queue", tags=["Queue"])
+router.include_router(config.router, prefix="/config", tags=["Static Configurations"])
+router.include_router(queue.router, prefix="/queue", tags=["Queue"])
+
+app.include_router(router)
 
 if __name__ == "__main__":
   uvicorn.run("app:app", host="0.0.0.0", port=5000)
